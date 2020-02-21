@@ -1,0 +1,6 @@
+#ifndef HEAD_AZUL_H_INCLUDED
+#define HEAD_AZUL_H_INCLUDED
+
+
+
+#endif // HEAD_AZUL_H_INCLUDED
