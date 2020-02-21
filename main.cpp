@@ -1,15 +1,14 @@
 #include <iostream>
-//#include<stdlib.h>
-//#include<time.h>
-#include<cstdlib>
-#include<ctime>
+#include<stdlib.h>
+#include<time.h>
+//#include<cstdlib>
+//#include<ctime>
 
 #include "head_azul.h"
 using namespace std;
 
 
 int* drawX(int n, int interval){
-    //srand(time(NULL)) ;
     int* nr = new int[n] ;
     for(int i=0;i<n;i++){
         nr[i]=rand()%interval;
@@ -18,14 +17,8 @@ int* drawX(int n, int interval){
 }
 
 int drawX1(int interval){
-    //srand(time(NULL)) ;
     int nr ;
     nr=rand()%interval;
-    /*
-    for(int i=0;i<1;i++){
-        nr=rand()%interval;
-    }
-    */
     return nr ;
 }
 
@@ -35,9 +28,6 @@ char drawCH(int* tile_cnt,int& test){
         tile_sum+=tile_cnt[i];
     }
     int* n =drawX(1,tile_sum);
-
-    //srand(time(NULL)) ;
-    //int n=rand()%100;
 
     cout << *n << " " ;
 
@@ -52,7 +42,7 @@ char drawCH(int* tile_cnt,int& test){
     test=tile_cumsum ;
 
     /// decrease number of tiles in zsak
-    tile_cnt[j]-=1;
+    tile_cnt[j-1]-=1;
 
     /// return character based on j
     switch(j){
@@ -69,9 +59,8 @@ int main()
 {
     srand(time(NULL)); /// initialize only once in an application!!!
 
-    //int tile_cnt[5]={20,5,20,15,20} ; ///content of zsak
-    int* tile_cnt=new int[5] ;
-    tile_cnt={20,20,20,20,20};
+    int tile_cnt[5]={20,5,20,15,20} ; ///content of zsak
+    int* p_tile_cnt=tile_cnt; ///pointer to zsak to modify with function
 
     cout << "test random number generator" << endl ;
     int* nr = drawX(5,100) ;
@@ -84,7 +73,7 @@ int main()
     int test ;
     int t=0 ;
     while(t<10){
-        cout << drawCH(tile_cnt[0],test) << " " << test << " tiles: " ;
+        cout << drawCH(p_tile_cnt,test) << " " << test << " tiles: " ;
         for(int i=0;i<5;i++){
             cout << tile_cnt[i] << " " ;
         }
