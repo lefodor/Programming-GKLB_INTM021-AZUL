@@ -106,22 +106,6 @@ char drawCH(int* tile_cnt){
     } ;
 }
 
-Korong* nrKorongForPlayers(int nrPlayer,int &nrKorongs){
-    int nrKorong ;
-    switch(nrPlayer){
-    case 2: nrKorong=5;break;
-    case 3: nrKorong=7;break;
-    case 4: nrKorong=9;break;
-    default: nrKorong=5;
-    }
-    nrKorongs=nrKorong ;
-    Korong* p_Korong=new Korong[nrKorong] ;
-    //cout << p_Korong << endl ;
-    //cout << p_Korong+1 << endl ;
-    //cout << p_Korong+2 << endl ;
-    return p_Korong ;
-}
-
 int* loadTiles(int tiles[], int n ){
     int* p_tiles=new int[n] ;
     for(int i=0;i<n;i++){
@@ -148,11 +132,27 @@ int* loadTilesConst(int c, int n ){
     return p_tiles ;
 }
 
-void initKorong(Korong* p_korong, int* p_tiles_in_zsak){
+Korong* createKorongsForGame(int nrPlayer,int &nrKorongs){
+    //int nrKorong ;
+    switch(nrPlayer){
+    case 2: nrKorongs=5;break;
+    case 3: nrKorongs=7;break;
+    case 4: nrKorongs=9;break;
+    default: nrKorongs=5;
+    }
+    //nrKorongs=nrKorong ;
+    Korong* p_Korong=new Korong[nrKorongs] ;
+    //cout << p_Korong << endl ;
+    //cout << p_Korong+1 << endl ;
+    //cout << p_Korong+2 << endl ;
+    return p_Korong ;
+}
+
+void initKorong(Korong* p_korong, Game* g){
     for(int i=0;i<5;i++){ p_korong->tiles_on_korong[i] = 0 ;}
     int j;
     for (int i=0;i<4;i++){
-        switch(drawCH(p_tiles_in_zsak)){
+        switch(drawCH(g->p_tiles_in_zsak)){
         case 'a':j=0 ;break ;
         case 'b':j=1 ;break ;
         case 'c':j=2 ;break ;
@@ -162,13 +162,13 @@ void initKorong(Korong* p_korong, int* p_tiles_in_zsak){
         }
         p_korong->tiles_on_korong[j]+=1 ;
     }
-    for (int j=0;j<5;j++){ cout << p_korong->tiles_on_korong[j] << " " ;}
-    cout << endl ;
+    //for (int j=0;j<5;j++){ cout << p_korong->tiles_on_korong[j] << " " ;}
+    //cout << endl ;
 }
-
-Game initGame(int nrPlayer, int* p_tiles_in_zsak){
+/*
+Game initGameV0(int nrPlayer, int* p_tiles_in_zsak){
     Game newgame ;
-    newgame.p_Korongs=nrKorongForPlayers(nrPlayer,newgame.nrKorongs) ;
+    newgame.p_Korongs=createKorongsForGame(nrPlayer,newgame.nrKorongs) ;
     for(int i=0;i<newgame.nrKorongs;i++){
         initKorong(newgame.p_Korongs+i,p_tiles_in_zsak);
     }
@@ -178,30 +178,38 @@ Game initGame(int nrPlayer, int* p_tiles_in_zsak){
 
     return newgame;
 }
+*/
+void initGame(int& nrPlayer, Game* g){
+    g->p_tiles_dropped=loadTilesConst(0,5);
+    g->p_tiles_in_zsak=loadTilesConst(20,5);
+    g->p_tiles_on_table=loadTilesConst(0,6);
+
+    g->p_Korongs=createKorongsForGame(nrPlayer,g->nrKorongs) ;
+    for(int i=0;i<g->nrKorongs;i++){
+        initKorong(g->p_Korongs+i,g);
+    }
+}
 
 void displayKorongHeader(int initspace){
-    /*
-    char* spaces=new char[initspace] ;
-    */
     char tiles[5]={'a','b','c','d','e'} ;
     for(int i=0;i<initspace;i++){cout << " " ;}
-    for(int i=0;i<5;i++) { cout << tiles[i] << "\t" ;}
+    for(int i=0;i<5;i++) { cout << tiles[i] << " " ;}
     cout << endl ;
 }
 
-void displayKorong(Game g){
+void displayKorong(Game* g){
     displayKorongHeader(16);
-    for(int i=0;i<g.nrKorongs;i++){
+    for(int i=0;i<g->nrKorongs;i++){
         cout << "Korong " << i+1 << ":" ;
         for(int j=0;j<5;j++){
-            cout << "\t" << (g.p_Korongs+i)->tiles_on_korong[j] ;
+            cout << "\t" << (g->p_Korongs+i)->tiles_on_korong[j] ;
         }
         cout << endl ;
     }
 //    displayKorongHeader(16);
     cout << "Asztal :" ;
     for(int i=0;i<6;i++){
-        cout <<"\t" << *(g.p_tiles_on_table+i) ;
+        cout <<"\t" << *(g->p_tiles_on_table+i) ;
     }
 }
 
@@ -210,6 +218,18 @@ void displayTiles(int n,int* p_tiles){
         cout << p_tiles[i] << " " ;
     }
     cout << endl ;
+}
+
+void displayAll(Game* g){
+    cout << "content of zsak after initialization: " ;
+    displayTiles(5,g->p_tiles_in_zsak);
+    cout << "tiles on table: " ;
+    displayTiles(6,g->p_tiles_on_table);
+    cout << "tiles on korongs:" << endl ;
+    displayKorongHeader(0);
+    for(int i=0;i<g->nrKorongs;i++){
+        displayTiles(5,(g->p_Korongs+i)->tiles_on_korong);
+    }
 }
 
 void fillZsak(Game* g){
@@ -226,6 +246,7 @@ void dropAll(Game* g){
     }
 }
 
+/// feladat#5
 char drawCH(Game* g){
     int tile_sum=0;
     for(int i=0;i<5;i++){
@@ -276,114 +297,20 @@ int main()
 {
     srand(time(NULL)); /// initialize only once in an application!!!
 
-    int tiles_in_zsak[5]={20,20,20,20,20} ; ///content of zsak
-    int* p_tiles_in_zsak=tiles_in_zsak; ///pointer to zsak to modify with function
+    //int tiles_in_zsak[5]={20,20,20,20,20} ; ///content of zsak
+    //int* p_tiles_in_zsak=tiles_in_zsak; ///pointer to zsak to modify with function
     int nrPlayer=3; /// number of players
 
-    /*
-    cout << "test random number generator" << endl ;
-    int* nr = drawX(5,100) ;
-    for(int i=0;i<5;i++){
-        cout << nr[i] << " " ;
-    }
-    cout << endl ;
+    Game newgame;
+    Game* p_newgame=&newgame;
+    initGame(nrPlayer,p_newgame) ;
+    displayAll(p_newgame) ;
 
-    cout << "feladat#1" << endl ;
-    */
-    //int test ;
-    //int t=0 ;
-    /*
-    while(t<10){
-        cout << drawCH_test(p_tile_cnt,test)
-             << " " << test << " tiles: "  ;
-        for(int i=0;i<5;i++){
-            cout << tile_cnt[i] << " " ;
-        }
-        cout << endl ;
-        t++ ;
-    }
+    dropAll(p_newgame) ;
+    displayTiles(5,p_newgame->p_tiles_in_zsak);
 
-
-    while(t<10){
-        cout << drawCH(p_tiles_in_zsak)
-             << " " << " tiles: "  ;
-        for(int i=0;i<5;i++){
-            cout << tiles_in_zsak[i] << " " ;
-        }
-        cout << endl ;
-        t++ ;
-    }
-
-    cout << "feladat#2"<<endl ;
-    int nrPlayer=3,nrKorongs;
-    Korong* p_Korongs=nrKorongForPlayers(nrPlayer, nrKorongs) ;
-
-    for(int i=0;i<nrPlayer;i++){
-        cout << p_Korongs+i << " " ;
-    }
-
-    cout << endl ;
-    cout << nrKorongs << endl ;
-    */
-
-    cout << "feladat#3"<<endl ;
-    cout << "content of zsak: " ;
-    for(int i=0;i<5;i++){
-        cout << *(p_tiles_in_zsak+i) << " " ;
-    }
-    cout << endl ;
-    Game ngame=initGame(nrPlayer,p_tiles_in_zsak) ;
-    cout << "content of zsak after initialization: " ;
-    for(int i=0;i<5;i++){
-        cout << *(p_tiles_in_zsak+i) << " " ;
-    }
-    cout << endl ;
-    cout << "nr of korongs: " << ngame.nrKorongs << endl ;
-
-    /*
-    cout << "dropped: " << endl ;
-    for(int i=0;i<5;i++) {
-        cout << ngame.p_tiles_dropped+i << " : " << *(ngame.p_tiles_dropped+i) << endl ;
-    }
-    cout << "zsak: " << endl ;
-    for(int i=0;i<5;i++) {
-        cout << ngame.p_tiles_in_zsak+i << " : " << *(ngame.p_tiles_in_zsak+i) << endl ;
-    }
-
-    cout << "table: " << endl ;
-    for(int i=0;i<6;i++) {
-        cout << ngame.p_tiles_on_table+i << " : " << *(ngame.p_tiles_on_table+i) << endl ;
-    }
-    */
-
-    cout << "feladat#4"<<endl ;
-    displayKorong(ngame) ;
-
-    cout << endl ;
-    cout << "feladat#5"<<endl ;
-    Game* p_ngame=&ngame ;
-    cout << "zsak pre draw: " ;
-    displayTiles(5,p_ngame->p_tiles_in_zsak);
-    cout << "zsak post draw: " ;
-    char drawn_test= drawCH(p_ngame) ;
-    displayTiles(5,p_ngame->p_tiles_in_zsak);
-    cout << drawn_test << endl ;
-
-    cout << "test fill and dropAll" << endl ;
-    dropAll(p_ngame);
-    cout << "zsak pre draw: " ;
-    displayTiles(5,p_ngame->p_tiles_in_zsak);
-    cout << "zsak post draw: " ;
-    drawn_test= drawCH(p_ngame) ;
-    displayTiles(5,p_ngame->p_tiles_in_zsak);
-    cout << drawn_test << endl ;
-
-
-    /*
-    for(int i=0;i<ngame.nrKorongs;i++){
-        cout << (ngame.p_Korongs+i)->tiles_on_korong[1] ;
-    }
-    */
+    fillZsak(p_newgame);
+    displayTiles(5,p_newgame->p_tiles_in_zsak);
 
     /// cleanup
     //delete nr,p_Korongs;
