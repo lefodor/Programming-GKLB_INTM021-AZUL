@@ -1,4 +1,4 @@
-#include <iostream>
+#include<iostream>
 #include<stdlib.h>
 #include<time.h>
 //#include<cstdlib>
@@ -100,6 +100,9 @@ char drawCH(int* tile_cnt){
     case 4: return 'd'; break ;
     case 5: return 'e'; break ;
     default: return 'f' ;
+
+    /// cleanup
+    delete n;
     } ;
 }
 
@@ -176,6 +179,99 @@ Game initGame(int nrPlayer, int* p_tiles_in_zsak){
     return newgame;
 }
 
+void displayKorongHeader(int initspace){
+    /*
+    char* spaces=new char[initspace] ;
+    */
+    char tiles[5]={'a','b','c','d','e'} ;
+    for(int i=0;i<initspace;i++){cout << " " ;}
+    for(int i=0;i<5;i++) { cout << tiles[i] << "\t" ;}
+    cout << endl ;
+}
+
+void displayKorong(Game g){
+    displayKorongHeader(16);
+    for(int i=0;i<g.nrKorongs;i++){
+        cout << "Korong " << i+1 << ":" ;
+        for(int j=0;j<5;j++){
+            cout << "\t" << (g.p_Korongs+i)->tiles_on_korong[j] ;
+        }
+        cout << endl ;
+    }
+//    displayKorongHeader(16);
+    cout << "Asztal :" ;
+    for(int i=0;i<6;i++){
+        cout <<"\t" << *(g.p_tiles_on_table+i) ;
+    }
+}
+
+void displayTiles(int n,int* p_tiles){
+    for(int i=0;i<n;i++){
+        cout << p_tiles[i] << " " ;
+    }
+    cout << endl ;
+}
+
+void fillZsak(Game* g){
+    for(int i=0;i<5;i++){
+        g->p_tiles_in_zsak[i]=g->p_tiles_dropped[i] ;
+        g->p_tiles_dropped[i]=0 ;
+    }
+}
+
+void dropAll(Game* g){
+    for(int i=0;i<5;i++){
+        g->p_tiles_dropped[i]=g->p_tiles_in_zsak[i] ;
+        g->p_tiles_in_zsak[i]=0 ;
+    }
+}
+
+char drawCH(Game* g){
+    int tile_sum=0;
+    for(int i=0;i<5;i++){
+        tile_sum+=g->p_tiles_in_zsak[i];
+    }
+
+    if(tile_sum==0){
+        fillZsak(g) ;
+        for(int i=0;i<5;i++){
+            tile_sum+=g->p_tiles_in_zsak[i];
+        }
+    }
+
+    int* n =drawX(1,tile_sum);
+
+    //cout << *n << " " ;
+
+    bool valueOver=false ;
+    int j=0 ;
+    int tile_cumsum=0 ;
+    while(!valueOver){
+        tile_cumsum+=g->p_tiles_in_zsak[j];
+        valueOver=(*n<tile_cumsum);
+        j++;
+    }
+
+    //test=tile_cumsum ;
+
+    /// decrease number of tiles in zsak
+    /// tile_cnt[j-1]-=1;
+    g->p_tiles_in_zsak[j-1]-=1;
+
+    /// return character based on j
+    switch(j){
+    case 1: return 'a'; break ;
+    case 2: return 'b'; break ;
+    case 3: return 'c'; break ;
+    case 4: return 'd'; break ;
+    case 5: return 'e'; break ;
+    default: return 'f' ;
+
+    /// cleanup
+    delete n;
+    } ;
+}
+
 int main()
 {
     srand(time(NULL)); /// initialize only once in an application!!!
@@ -184,6 +280,7 @@ int main()
     int* p_tiles_in_zsak=tiles_in_zsak; ///pointer to zsak to modify with function
     int nrPlayer=3; /// number of players
 
+    /*
     cout << "test random number generator" << endl ;
     int* nr = drawX(5,100) ;
     for(int i=0;i<5;i++){
@@ -192,6 +289,7 @@ int main()
     cout << endl ;
 
     cout << "feladat#1" << endl ;
+    */
     //int test ;
     //int t=0 ;
     /*
@@ -242,7 +340,6 @@ int main()
     cout << endl ;
     cout << "nr of korongs: " << ngame.nrKorongs << endl ;
 
-
     /*
     cout << "dropped: " << endl ;
     for(int i=0;i<5;i++) {
@@ -259,8 +356,37 @@ int main()
     }
     */
 
+    cout << "feladat#4"<<endl ;
+    displayKorong(ngame) ;
+
+    cout << endl ;
+    cout << "feladat#5"<<endl ;
+    Game* p_ngame=&ngame ;
+    cout << "zsak pre draw: " ;
+    displayTiles(5,p_ngame->p_tiles_in_zsak);
+    cout << "zsak post draw: " ;
+    char drawn_test= drawCH(p_ngame) ;
+    displayTiles(5,p_ngame->p_tiles_in_zsak);
+    cout << drawn_test << endl ;
+
+    cout << "test fill and dropAll" << endl ;
+    dropAll(p_ngame);
+    cout << "zsak pre draw: " ;
+    displayTiles(5,p_ngame->p_tiles_in_zsak);
+    cout << "zsak post draw: " ;
+    drawn_test= drawCH(p_ngame) ;
+    displayTiles(5,p_ngame->p_tiles_in_zsak);
+    cout << drawn_test << endl ;
+
+
+    /*
+    for(int i=0;i<ngame.nrKorongs;i++){
+        cout << (ngame.p_Korongs+i)->tiles_on_korong[1] ;
+    }
+    */
+
     /// cleanup
-    delete nr/*,p_Korongs*/;
+    //delete nr,p_Korongs;
 
     return 0;
 }
