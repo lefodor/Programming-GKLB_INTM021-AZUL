@@ -21,22 +21,22 @@ struct Game{
 };
 
 struct Mintasor{
-    int mintasor1[1] ;
-    int mintasor2[2] ;
-    int mintasor3[3] ;
-    int mintasor4[4] ;
-    int mintasor5[5] ;
+    char* mintasor1=new char[1] ;
+    char* mintasor2=new char[2] ;
+    char* mintasor3=new char[3] ;
+    char* mintasor4=new char[4] ;
+    char* mintasor5=new char[5] ;
 };
 
 struct Padlovonal{
     int points[7]={-1,-1,-2,-2,-2,-3,-3} ;
-    int tiles_on_padlo[7];
+    char* tiles_on_padlo;
 };
 
 struct Table{
-    Mintasor* mintasor ;
+    char* mintasor[5][5];
     Padlovonal* padlovonal;
-    int* fal[5][5] ;
+    char* fal[5][5] ;
 };
 
 struct Player{
@@ -190,8 +190,64 @@ void initGame(int& nrPlayer, Game* g){
     }
 }
 
-void initPlayer(){
+char* initCharPoint(int n){
+    char* out=new char[n] ;
+    for(int i=0;i<n;i++){
+        out[i]='.';
+    }
+    return out ;
+}
 
+void initPadlo(Padlovonal* pv){
+    pv->tiles_on_padlo=initCharPoint(7) ;
+    //pv->points={-1,-1,-2,-2,-2,-3,-3} ;
+}
+/*
+char* initFal(int row, int col){
+    char* out=new char[row] ;
+    for(int i=0;i<row;i++){
+        for(int j=0;j<col;j++){
+            out[i][j]='.';
+        }
+    }
+    return out ;
+}
+
+char* initMintasor(int row, int col){
+    char* out[row][col];
+    for(int i=0;i<row;i++){
+        for(int j=0;j<col;j++){
+            if(j<=i) {out[i][j]='.' ; } ;
+            else {out[i][j]=' ' ;}
+        }
+    }
+    return out;
+}
+
+char* initMintasor(int,int) ;
+char* initFal(int,int) ;
+
+void initTable(Table* t){
+    t->mintasor=initMintasor(5,5) ;
+    initPadlo(t->padlovonal);
+    t->fal=initFal(5,5);
+}
+
+void initPlayer(Player* p){
+    p->points=0;
+    initTable(p->table);
+}
+*/
+
+int** init2D(int p_size1){
+    int** p=new int*[p_size1];
+    for(int i=0;i<p_size1;i++){
+        p[i] = new int[i] ;
+        for(int j=0;j<i;j++){
+            p[i][j] = j ;
+        }
+    }
+    return p ;
 }
 
 void displayKorongHeader(int initspace){
@@ -236,6 +292,22 @@ void displayAll(Game* g){
     }
 }
 
+void display2D(int** p, int size_p){
+    for(int i=0;i<size_p;i++){
+        for(int j=0;j<i;j++){
+            cout << p[i][j] << " " ;
+        }
+        cout << endl ;
+    }
+}
+
+void delete2D(int** p, int size_p){
+    for(int i=0;i<size_p;i++){
+        delete []p[i] ;
+    }
+    delete []p ;
+}
+
 int main()
 {
     srand(time(NULL)); /// initialize only once in an application!!!
@@ -254,6 +326,34 @@ int main()
 
     Player* p_Player=createPlayers(nrPlayer) ; for(int i=0;i<nrPlayer;i++){ cout << p_Player+i <<" " ; }
 
+
+    cout << endl ;
+
+    int** p_rows=init2D(7) ;
+
+    display2D(p_rows,7) ;
+
+    delete2D(p_rows,7) ;
+
+    display2D(p_rows,7) ;
+
+/*
+    cout << endl ;
+    for(int i=0;i<5;i++){
+        int* t=new int[i] ;
+        p_rows[i] = t[0] ;//new int[i] ;
+    }
+    cout << endl ;
+
+    for(int i=0;i<5;i++){
+        for(int j=0;j<i;j++){
+            //p_rows[i]+j = 0;
+            cout << p_rows[i]+0 << " " ;
+        }
+        cout << endl ;
+    }
+*/
+    //for(int i=0;i<5;i++) cout << p_rows[i] << " " ;
     /// cleanup
     //delete nr,p_Korongs;
     //delete p_Korongs, p_Player ;
