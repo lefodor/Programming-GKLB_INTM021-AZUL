@@ -30,13 +30,13 @@ struct Mintasor{
 
 struct Padlovonal{
     int points[7]={-1,-1,-2,-2,-2,-3,-3} ;
-    char* tiles_on_padlo;
+    char** tiles_on_padlo;
 };
 
 struct Table{
-    char* mintasor[5][5];
-    Padlovonal* padlovonal;
-    char* fal[5][5] ;
+    char** mintasor;
+    char** fal ;
+    char** tiles_on_padlo;
 };
 
 struct Player{
@@ -197,12 +197,12 @@ char* initCharPoint(int n){
     }
     return out ;
 }
-
+/*
 void initPadlo(Padlovonal* pv){
     pv->tiles_on_padlo=initCharPoint(7) ;
     //pv->points={-1,-1,-2,-2,-2,-3,-3} ;
 }
-/*
+
 char* initFal(int row, int col){
     char* out=new char[row] ;
     for(int i=0;i<row;i++){
@@ -226,20 +226,9 @@ char* initMintasor(int row, int col){
 
 char* initMintasor(int,int) ;
 char* initFal(int,int) ;
-
-void initTable(Table* t){
-    t->mintasor=initMintasor(5,5) ;
-    initPadlo(t->padlovonal);
-    t->fal=initFal(5,5);
-}
-
-void initPlayer(Player* p){
-    p->points=0;
-    initTable(p->table);
-}
 */
 
-int** init2D(int p_size1){
+int** init2Dint(int p_size1){
     int** p=new int*[p_size1];
     for(int i=0;i<p_size1;i++){
         p[i] = new int[i] ;
@@ -248,6 +237,47 @@ int** init2D(int p_size1){
         }
     }
     return p ;
+}
+
+char** init2Dmintasor(int p_size){
+    char** p=new char*[p_size];
+    for(int i=0;i<p_size;i++){
+        p[i] = new char[i+1] ;
+        int j=0;
+        while(j<=i){
+            p[i][j] = '.' ;
+            //cout << "p["<<i<<"]["<<j<<"]:"<<p[i][j] << " " ;
+            j++;
+        }
+        //cout << endl ;
+    }
+    return p ;
+}
+
+char** initXDfal(int size_row,int size_col){
+    char** p=new char*[size_row];
+    for(int i=0;i<size_row;i++){
+        p[i] = new char[i+1] ;
+        int j=0;
+        while(j<size_col){
+            p[i][j] = '.' ;
+            //cout << "p["<<i<<"]["<<j<<"]:"<<p[i][j] << " " ;
+            j++;
+        }
+        //cout << endl ;
+    }
+    return p ;
+}
+
+void initTable(Table* t){
+    t->mintasor=init2Dmintasor(5) ;
+    t->fal=initXDfal(5,5);
+    t->tiles_on_padlo=initXDfal(1,7);
+}
+
+void initPlayer(Player* p){
+    p->points=0;
+    initTable(p->table);
 }
 
 void displayKorongHeader(int initspace){
@@ -292,7 +322,7 @@ void displayAll(Game* g){
     }
 }
 
-void display2D(int** p, int size_p){
+void display2Dint(int** p, int size_p){
     for(int i=0;i<size_p;i++){
         for(int j=0;j<i;j++){
             cout << p[i][j] << " " ;
@@ -301,7 +331,32 @@ void display2D(int** p, int size_p){
     }
 }
 
-void delete2D(int** p, int size_p){
+void delete2Dint(int** p, int size_p){
+    for(int i=0;i<size_p;i++){
+        delete []p[i] ;
+    }
+    delete []p ;
+}
+
+void display2Dmintasor(char** p, int size_p){
+    for(int i=0;i<size_p;i++){
+        for(int j=0;j<=i;j++){
+            cout << p[i][j] << " " ;
+        }
+        cout << endl ;
+    }
+}
+
+void displayXDfal(char** p, int size_row,int size_col){
+    for(int i=0;i<size_row;i++){
+        for(int j=0;j<size_col;j++){
+            cout << p[i][j] << " " ;
+        }
+        cout << endl ;
+    }
+}
+
+void delete2Dchar(char** p, int size_p){
     for(int i=0;i<size_p;i++){
         delete []p[i] ;
     }
@@ -329,13 +384,26 @@ int main()
 
     cout << endl ;
 
-    int** p_rows=init2D(7) ;
+    int** p_rows=init2Dint(7) ;
+    char** p_chars=init2Dmintasor(5) ;
+    char** p_chars2=initXDfal(1,5) ;
+    char** p_chars3=initXDfal(5,5) ;
 
-    display2D(p_rows,7) ;
+    //display2Dint(p_rows,7) ;
+    cout << endl ;
+    display2Dmintasor(p_chars,5) ;
+    cout << endl ;
+    displayXDfal(p_chars2,1,5) ;
+    cout << endl ;
+    displayXDfal(p_chars3,5,5) ;
+    cout << endl ;
 
-    delete2D(p_rows,7) ;
+    delete2Dint(p_rows,7) ;
+    delete2Dchar(p_chars,5);
+    delete2Dchar(p_chars2,1);
+    delete2Dchar(p_chars3,5);
 
-    display2D(p_rows,7) ;
+    //display2Dint(p_rows,7) ;
 
 /*
     cout << endl ;
