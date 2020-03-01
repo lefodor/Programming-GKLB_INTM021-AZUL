@@ -33,7 +33,8 @@ struct Table{
 
 struct Player{
     int points ;
-    Table* table ;
+    Table table ;
+    Table* p_table=&table ;
 };
 
 /// functions
@@ -226,13 +227,18 @@ void initTable(Table* t){
 
 void initPlayer(Player* p){
     p->points=0;
-    initTable(p->table);
+    initTable(p->p_table);
 }
 
 /// creates an array with pointers to objects of Player
-Player* createPlayer(int nrPlayers){
+Player* createPlayerList(int nrPlayers){
     Player* p=new Player[nrPlayers] ;
-    for(int i=0;i<nrPlayers;i++){cout << p+i << " " ; }
+    for(int i=0;i<nrPlayers;i++){
+        //cout << p+i << " " ;
+        initPlayer(p+i) ;
+        //if(i<nrPlayers) {p[i].nextplayer=p[i+1];}
+        //else {p[i].nextplayer=nullptr ;}
+    }
     //initPlayer(p_player) ;
     return p ;
 }
@@ -307,9 +313,9 @@ void displayXDfal(char** p, int size_row,int size_col){
 }
 
 void displayPlayer(Player* p){
-    cout << "fal:" << endl ;displayXDfal(p->table->fal,5,5) ;
-    cout << "mintasor:" << endl ;display2Dmintasor(p->table->mintasor,5) ;
-    cout << "padlo:" << endl ;displayXDfal(p->table->tiles_on_padlo,1,7) ;
+    cout << "fal:" << endl ;displayXDfal(p->p_table->fal,5,5) ;
+    cout << "mintasor:" << endl ;display2Dmintasor(p->p_table->mintasor,5) ;
+    cout << "padlo:" << endl ;displayXDfal(p->p_table->tiles_on_padlo,1,7) ;
 }
 
 void delete2Dint(int** p, int size_p){
@@ -332,7 +338,7 @@ int main()
 
     //int tiles_in_zsak[5]={20,20,20,20,20} ; ///content of zsak
     //int* p_tiles_in_zsak=tiles_in_zsak; ///pointer to zsak to modify with function
-    int nrPlayer=3; /// number of players
+    int nrPlayer=4; /// number of players
 
     Game newgame;
     Game* p_newgame=&newgame;
@@ -342,44 +348,16 @@ int main()
 
     fillZsak(p_newgame); displayTiles(5,p_newgame->p_tiles_in_zsak);
 
-    Player* p0 = createPlayer(nrPlayer) ;
+    Player* p0 = createPlayerList(nrPlayer) ;
     cout << endl ;
-    cout << p0 << endl ;
-    //for(int i=0;i<nrPlayer;i++){cout << p0+i << " " ; }
-    cout << endl ;
-    //for(int i=0;i<nrPlayer;i++){initPlayer(p0+i); }
-    //Player* p_p0 = &p0 ;
-    //initPlayer(p_p0);
-    //for(int i=0;i<nrPlayer;i++){ cout << p_Player+i <<" " ; }
-    //Player* p_Player=new Player[nrPlayer] ;
-    //for(int i=0;i<nrPlayer;i++){ cout << p_Player+i <<" " ; }
-    //createPlayers(nrPlayer) ; for(int i=0;i<nrPlayer;i++){ cout << p_Player+i <<" " ; }
-    //cout << endl << p_Player ;
 
+    ///display players' tables
+    for(int i=0;i<nrPlayer;i++){
+        cout << "player " << i+1 << ":" << endl ;
+        displayPlayer(p0+i) ;
+    }
 
-    /// testing
-
-    Player p1 ;
-    Player* p_p1=&p1 ;
-    initPlayer(p_p1);
-    cout << endl ;
-    displayPlayer(p_p1) ;
-    //cout << p_p1->points ;
 /*
-    int** p_rows=init2Dint(7) ;
-    char** p_chars=init2Dmintasor(5) ;
-    char** p_chars2=initXDfal(1,5) ;
-    char** p_chars3=initXDfal(5,5) ;
-
-    //display2Dint(p_rows,7) ;
-    cout << endl ;
-    display2Dmintasor(p_chars,5) ;
-    cout << endl ;
-    displayXDfal(p_chars2,1,5) ;
-    cout << endl ;
-    displayXDfal(p_chars3,5,5) ;
-    cout << endl ;
-
     delete2Dint(p_rows,7) ;
     delete2Dchar(p_chars,5);
     delete2Dchar(p_chars2,1);
