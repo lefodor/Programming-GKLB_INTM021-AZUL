@@ -312,12 +312,39 @@ void displayXDfal(char** p, int size_row,int size_col){
     }
 }
 
-void displayPlayer(Player* p){
+void displayPlayerV1(Player* p){
     cout << "fal:" << endl ;displayXDfal(p->p_table->fal,5,5) ;
     cout << "mintasor:" << endl ;display2Dmintasor(p->p_table->mintasor,5) ;
     cout << "padlo:" << endl ;displayXDfal(p->p_table->tiles_on_padlo,1,7) ;
 }
 
+void displayPlayer(Player* p){
+    //string header={'1','2','3','4','5',' ',' ',' ',' ',' ','P','o','n','t','o','k',':' };
+    string header="1 2 3 4 5     Pontok:" ;
+    for (int i=0;i<21;i++){cout << header[i] ;}
+    cout << endl ;
+
+    for(int i=0;i<5;i++){
+        for(int jf=0;jf<5;jf++){
+            cout << p->p_table->fal[i][jf] << " " ;
+        }
+        cout << " " << i+1 << "  " ;
+        int jm=0 ;
+        do{
+            cout << p->p_table->mintasor[i][jm] << " " ;
+            jm++;
+        }while(jm<=i);
+        cout << endl ;
+    }
+}
+/*
+    for(int i=0;i<size_p;i++){
+        for(int j=0;j<=i;j++){
+            cout << p[i][j] << " " ;
+        }
+        cout << endl ;
+    }
+*/
 void delete2Dint(int** p, int size_p){
     for(int i=0;i<size_p;i++){
         delete []p[i] ;
@@ -334,11 +361,11 @@ void delete2Dchar(char** p, int size_p){
 
 int main()
 {
-    srand(time(NULL)); /// initialize only once in an application!!!
+    srand(time(NULL)); /// initialize only once in application!!!
 
     //int tiles_in_zsak[5]={20,20,20,20,20} ; ///content of zsak
     //int* p_tiles_in_zsak=tiles_in_zsak; ///pointer to zsak to modify with function
-    int nrPlayer=4; /// number of players
+    int nrPlayer=3; /// number of players
 
     Game newgame;
     Game* p_newgame=&newgame;
@@ -352,10 +379,15 @@ int main()
     cout << endl ;
 
     ///display players' tables
+    /*
     for(int i=0;i<nrPlayer;i++){
         cout << "player " << i+1 << ":" << endl ;
         displayPlayer(p0+i) ;
     }
+    */
+    //for(int i=0, j=0;i<4, j<3;i++, j++){cout << i << " " ; }
+
+    displayPlayer(p0) ;
 
 /*
     delete2Dint(p_rows,7) ;
