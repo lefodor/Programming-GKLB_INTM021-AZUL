@@ -19,12 +19,7 @@ struct Game{
     int* p_tiles_on_table ;
     int* p_tiles_dropped ;
 };
-/*
-struct Padlovonal{
-    int points[7]={-1,-1,-2,-2,-2,-3,-3} ;
-    char** tiles_on_padlo;
-};
-*/
+
 struct Table{
     char** mintasor;
     char** fal ;
@@ -195,7 +190,7 @@ char** init2Dmintasor(int p_size){
         p[i] = new char[i+1] ;
         int j=0;
         while(j<=i){
-            p[i][j] = '.' ;
+            p[i][j] = '-' ;
             //cout << "p["<<i<<"]["<<j<<"]:"<<p[i][j] << " " ;
             j++;
         }
@@ -204,13 +199,13 @@ char** init2Dmintasor(int p_size){
     return p ;
 }
 
-char** initXDfal(int size_row,int size_col){
+char** initXDfal(int size_row,int size_col,char c){
     char** p=new char*[size_row];
     for(int i=0;i<size_row;i++){
         p[i] = new char[i+1] ;
         int j=0;
         while(j<size_col){
-            p[i][j] = '.' ;
+            p[i][j] = c ;
             //cout << "p["<<i<<"]["<<j<<"]:"<<p[i][j] << " " ;
             j++;
         }
@@ -221,8 +216,8 @@ char** initXDfal(int size_row,int size_col){
 
 void initTable(Table* t){
     t->mintasor=init2Dmintasor(5) ;
-    t->fal=initXDfal(5,5);
-    t->tiles_on_padlo=initXDfal(1,7);
+    t->fal=initXDfal(5,5,'.');
+    t->tiles_on_padlo=initXDfal(1,7,'-');
 }
 
 void initPlayer(Player* p){
@@ -306,22 +301,16 @@ void display2Dmintasor(char** p, int size_p){
 void displayXDfal(char** p, int size_row,int size_col){
     for(int i=0;i<size_row;i++){
         for(int j=0;j<size_col;j++){
-            cout << p[i][j] << " " ;
+            cout << p[i][j] << "  " ;
         }
         cout << endl ;
     }
 }
 
-void displayPlayerV1(Player* p){
-    cout << "fal:" << endl ;displayXDfal(p->p_table->fal,5,5) ;
-    cout << "mintasor:" << endl ;display2Dmintasor(p->p_table->mintasor,5) ;
-    cout << "padlo:" << endl ;displayXDfal(p->p_table->tiles_on_padlo,1,7) ;
-}
-
 void displayPlayer(Player* p){
-    //string header={'1','2','3','4','5',' ',' ',' ',' ',' ','P','o','n','t','o','k',':' };
     string header="1 2 3 4 5     Pontok:" ;
     for (int i=0;i<21;i++){cout << header[i] ;}
+    cout << p->points ;
     cout << endl ;
 
     for(int i=0;i<5;i++){
@@ -336,15 +325,18 @@ void displayPlayer(Player* p){
         }while(jm<=i);
         cout << endl ;
     }
+    cout << endl ;
+    displayXDfal(p->p_table->tiles_on_padlo,1,7) ;
+    int points[7]={-1,-1,-2,-2,-2,-3,-3};
+    for(int i=0;i<7;i++){cout << points[i] << " " ;}
+    cout << endl ;
 }
-/*
-    for(int i=0;i<size_p;i++){
-        for(int j=0;j<=i;j++){
-            cout << p[i][j] << " " ;
-        }
-        cout << endl ;
-    }
-*/
+
+void chooseTiles(Game* p_game, Player* p_player){
+    int korongvalaszt ;
+    cout << "melyik korongrol?:" ; cin>>korongvalaszt ;
+}
+
 void delete2Dint(int** p, int size_p){
     for(int i=0;i<size_p;i++){
         delete []p[i] ;
@@ -371,9 +363,9 @@ int main()
     Game* p_newgame=&newgame;
     initGame(nrPlayer,p_newgame) ; displayAll(p_newgame) ;
 
-    dropAll(p_newgame) ; displayTiles(5,p_newgame->p_tiles_in_zsak);
+    //dropAll(p_newgame) ; //displayTiles(5,p_newgame->p_tiles_in_zsak);
 
-    fillZsak(p_newgame); displayTiles(5,p_newgame->p_tiles_in_zsak);
+    //fillZsak(p_newgame); //displayTiles(5,p_newgame->p_tiles_in_zsak);
 
     Player* p0 = createPlayerList(nrPlayer) ;
     cout << endl ;
@@ -385,9 +377,7 @@ int main()
         displayPlayer(p0+i) ;
     }
     */
-    //for(int i=0, j=0;i<4, j<3;i++, j++){cout << i << " " ; }
-
-    displayPlayer(p0) ;
+    chooseTiles(p_newgame, p0);
 
 /*
     delete2Dint(p_rows,7) ;
