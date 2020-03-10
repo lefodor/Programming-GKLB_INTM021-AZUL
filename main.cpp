@@ -11,43 +11,49 @@ using namespace std;
 
 int main()
 {
+    /// set random number generator
     srand(time(NULL)); /// initialize only once in application!!!
 
-    //int tiles_in_zsak[5]={20,20,20,20,20} ; ///content of zsak
-    //int* p_tiles_in_zsak=tiles_in_zsak; ///pointer to zsak to modify with function
+    /// set number of players
     int nrPlayer=3; /// number of players
 
+    /// create game
     Game newgame;
+
     Game* p_newgame=&newgame;
-    initGame(nrPlayer,p_newgame) ; displayAll(p_newgame) ;
+    initGame(nrPlayer,p_newgame) ;
+    //displayAll(p_newgame) ;
 
     //dropAll(p_newgame) ; //displayTiles(5,p_newgame->p_tiles_in_zsak);
-
     //fillZsak(p_newgame); //displayTiles(5,p_newgame->p_tiles_in_zsak);
 
+    /// create players
     Player* p0 = createPlayerList(nrPlayer) ;
     cout << endl ;
 
-    ///display players' tables
-    /*
+    while(true){
     for(int i=0;i<nrPlayer;i++){
-        cout << "player " << i+1 << ":" << endl ;
-        displayPlayer(p0+i) ;
+        system("cls");
+
+        /// display game repo and player's table
+        displayAll(p_newgame) ;
+        displayPlayer(p0+i);
+
+        cout << "Ready player " << i+1 << endl ;
+        /// choose tiles from korong
+        chooseTiles(p_newgame, p0+i);
+
+        /// show player's table after tile allocation
+        cout << "Jatekos tablaja valasztas utan:\n" ;
+        displayPlayer(p0+i);
+
+        ///https://www.dreamincode.net/forums/topic/185297-press-any-key-to-continue/
+        cout << "Press any key to continue...\n";
+        cin.clear();cin.sync();cin.get();
+
     }
-    */
-    /// testing
-    /*
-    string result ;
-    stringstream converter;
-    getline(cin, result);
-    converter << result;
-    */
-
-
-
-    chooseTiles(p_newgame, p0);
-    //int t=GetInteger();
-
+    }
+    /// cleanup
 /*
     delete2Dint(p_rows,7) ;
     delete2Dchar(p_chars,5);
@@ -55,7 +61,6 @@ int main()
     delete2Dchar(p_chars3,5);
 */
     //for(int i=0;i<5;i++) cout << p_rows[i] << " " ;
-    /// cleanup
     //delete nr,p_Korongs;
     //delete p_Korongs, p_Player ;
 
