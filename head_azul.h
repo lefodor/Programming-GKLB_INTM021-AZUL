@@ -46,7 +46,10 @@ int* loadTiles(int[], int);
 int* loadTilesConst(int, int);
 string getLine() ;
 int getInteger() ;
-int chooseTiles(Game*, Player*);
+char chooseColor();
+void helpValues(int n);
+void chooseTiles(Game*, Player*);
+char chooseSzin();
 
 void displayKorongHeader(int);
 void displayKorong(Game*);
@@ -122,8 +125,8 @@ void initKorong(Korong* p_korong, Game* g){
         case 'b':j=1 ;break ;
         case 'c':j=2 ;break ;
         case 'd':j=3 ;break ;
-        case 'e':j=4 ;break ;
-        default: j=5 ;break ;
+        //case 'e':j=4 ;break ;
+        default: j=4 ;break ;
         }
         p_korong->tiles_on_korong[j]+=1 ;
     }
@@ -362,32 +365,136 @@ void displayPlayer(Player* p){
     cout << endl ;
 }
 
-int chooseTiles(Game* p_game, Player* p_player){
+int chooseKorong2(int n){
+    cout << "Melyik korongrol valasztasz? (0-" ;
+    cout << n <<" 0:asztal): " ;
     while(true) { // Read input until user enters valid data
-        cout << "Melyik korongrol valasztasz? (0-" ;
-        cout << p_game->nrKorongs<<" 0:asztal): " ;
-        stringstream converter;
-        converter << getLine();
-        /* Try reading an int, continue if we succeeded. */
-        int korongvalaszt;
-        if(converter >> korongvalaszt) {
-            char remaining;
-            if(converter >> remaining) // Something's left, input is invalid
-                cout << "Nem ertelmezheto karakter: " << remaining << endl << "Probald ujra! " << endl ;
-            else if(korongvalaszt>p_game->nrKorongs||korongvalaszt<0){
-                cout << "Kerlek a megadott korongszamokbol valassz. ";
-                cout << "Probald ujra! " << endl ;
+        string str ;
+        int cnt=0 ;
+        getline(cin,str) ;
+        while(str[cnt]!='\0') { cnt++ ;}
+        if(str[0]=='\0'){cout << "Legalabb 1 korongot meg kell adni! Probald ujra!" ;}
+        else if(cnt>1)  {cout << "Csak 1 korong adhato meg! Probald ujra!" ;}
+        else{
+            for(char i=48;i<(48+n+1);i++){
+                if(str[0]==i) {
+                    //cout << atoi(str.c_str()) << " " << str.c_str() << " " << (int)str[0] << endl ;
+                    return atoi(str.c_str());
+                }
             }
-            else
-                return korongvalaszt;
-        }
-        else {
-            //cout << "Kerlek a megadott korongszamokbol valassz. ";
-            string invalid_input ; invalid_input=converter.str() ;
-            cout << "Nem ertelmezheto karakter: " << invalid_input << endl ;
-            cout << "Probald ujra! " << endl ;
+            cout << "Csak a kovetkezo szamok valaszthatok: 0-"<<n<<", 0:asztal) ! Probald ujra!" ;
+
         }
     }
+}
+
+char chooseColor(){
+    cout << "Melyik szint valasztod? (a,b,c,d,e): " ;
+    while(true){
+        //cout << "Melyik szint valasztod? (a,b,c,d,e): " ;
+        string str ;
+        int cnt=0 ;
+        getline(cin,str) ;
+        while(str[cnt]!='\0') { cnt++ ;}
+        if(str[0]=='\0'){cout << "Legalabb 1 szint meg kell adni! Probald ujra!" ;}
+        else if(cnt>1)  {cout << "Csak 1 szin adhato meg! Probald ujra!" ;}
+        else{
+            //bool invalidchar =false ;
+            for(char i=97;i<102;i++){
+                if(str[0]==i) { /*invalidchar=true;*/ return str[0] ;}
+            }
+            //if(invalidchar==false){
+                cout << "Csak a kovetkezo szinek valaszthatok: a,b,c,d,e ! Probald ujra!" ;
+            //}
+
+        }
+    }
+}
+
+void getChoice(int& k, char& sz_c, int& m, int nrKorongs){
+    /// valasztas rogzitese
+    k = chooseKorong2(nrKorongs);
+    sz_c=chooseColor();
+    cout << "Melyik sorra szeretned tenni a csempeket? " ;
+    m=getInteger() ;
+}
+
+bool validateChoice(Table* t, char sz, int m){
+    bool validinput=false ;
+    if( t->mintasor[m-1][0]== '-' ||
+        t->mintasor[m-1][0]==sz ){
+            validinput=true ;
+    };
+    if(!validinput){ cout << "A megadott mindasorban mas szinu elemek vannak! Probald ujra!\n" ; }
+    return validinput ;
+}
+
+void putTilesToTable(Table* t, char sz, int m, int tilesToBeAllocated, bool kezdoko){
+    int allocated=0;
+    int j=0 ;
+    /// sort out kezdoko
+    if(kezdoko){
+        t->tiles_on_padlo[0][0]='k' ;
+    }
+    /// put tiles to mintasor
+    while(allocated<tilesToBeAllocated&&j<m){
+        if(t->mintasor[m-1][j]=='-'){
+            t->mintasor[m-1][j]=sz;
+            allocated++;
+        }
+        j++;
+    }
+    j=0;
+    /// put tiles to padlo
+    while(allocated<tilesToBeAllocated){
+        if(t->tiles_on_padlo[0][j]=='-'){ /// start filling padlo where '-' occurs
+            t->tiles_on_padlo[0][j]=sz;
+            allocated++;
+        }
+        j++;
+    }
+}
+
+void chooseTiles(Game* g, Player* p){
+    //displayPlayer(p);
+    int k ;
+    char sz_c ;
+    int m ;
+
+    /// record and validate user choice
+    do{
+        getChoice(k,sz_c,m,g->nrKorongs) ;
+    }while(!validateChoice(p->p_table,sz_c,m)) ;
+
+    /// akcio vegrehajtasa
+    int sz ;
+    switch(sz_c){
+    case 'a':sz=0 ;break ;
+    case 'b':sz=1 ;break ;
+    case 'c':sz=2 ;break ;
+    case 'd':sz=3 ;break ;
+    default: sz=4 ;break ;
+    }
+
+    if(k!=0){ /// korong is chosen, not table
+        //displayTiles(5,(g->p_Korongs+k-1)->tiles_on_korong) ;
+        int choosentiles_cnt = (g->p_Korongs+k-1)->tiles_on_korong[sz];
+        (g->p_Korongs+k-1)->tiles_on_korong[sz]=0; /// set colours to 0
+        putTilesToTable(p->p_table,sz_c,m,choosentiles_cnt,0);
+
+        //displayTiles(5,(g->p_Korongs+k-1)->tiles_on_korong);
+    }
+
+    else{ /// table is chosen
+        int choosentiles_cnt = g->p_tiles_on_table[sz];
+        bool kezdoko = (g->p_tiles_on_table[5]>0) ;
+        g->p_tiles_on_table[5]=0 ; /// set kezdoko to 0
+        g->p_tiles_on_table[sz]=0; /// set colours to 0
+        putTilesToTable(p->p_table,sz_c,m,choosentiles_cnt,kezdoko);
+    }
+
+    cout << endl ;
+
 }
 
 ///https://www.keithschwarz.com/cs106l/fall2010/course-reader/Ch3_Streams.pdf
@@ -397,11 +504,40 @@ string getLine() {
     return result;
 }
 
+/*
+int chooseKorong(int n){
+    while(true) { // Read input until user enters valid data
+        cout << "Melyik korongrol valasztasz? (0-" ;
+        cout << n <<" 0:asztal): " ;
+        stringstream converter;
+        converter << getLine();
+        // Try reading an int, continue if we succeeded.
+        int korongvalaszt;
+        if(converter >> korongvalaszt) {
+            char remaining;
+            if(converter >> remaining) // Something's left, input is invalid
+                cout << "Nem ertelmezheto karakter: " << remaining << endl << "Probald ujra! " << endl ;
+            else if(korongvalaszt>n||korongvalaszt<0){
+                cout << "Kerlek a megadott korongszamokbol valassz. ";
+                cout << "Probald ujra! " << endl ;
+            }
+            else
+                return korongvalaszt;
+        }
+        else {
+            string invalid_input ; invalid_input=converter.str() ;
+            cout << "Nem ertelmezheto karakter: " << invalid_input << endl ;
+            cout << "Probald ujra! " << endl ;
+        }
+    }
+}
+*/
+/*
 int getInteger_orig() {
     while(true) { // Read input until user enters valid data
         stringstream converter;
         converter << getLine();
-        /* Try reading an int, continue if we succeeded. */
+        // Try reading an int, continue if we succeeded.
         int result;
         if(converter >> result) {
             char remaining;
@@ -410,17 +546,16 @@ int getInteger_orig() {
             else
                 return result;
         } else
-        //cout << "Please enter an integer." << endl;
         cout << "Please enter an integer." << endl;
         cout << "Retry: " ;
     }
 }
-
+*/
 int getInteger() {
     while(true) { // Read input until user enters valid data
         stringstream converter;
         converter << getLine();
-        /* Try reading an int, continue if we succeeded. */
+        // Try reading an int, continue if we succeeded.
         int result;
         if(converter >> result) {
             char remaining;
@@ -429,11 +564,10 @@ int getInteger() {
             else
                 return result;
         } else
-        cout << "Kerlek a megadott korongszamokbol valassz." << endl;
+        cout << "Kerlek a megadott integerekbol valassz." << endl;
         cout << "Ujra: " ;
     }
 }
-
 
 void delete2Dint(int** p, int size_p){
     for(int i=0;i<size_p;i++){
