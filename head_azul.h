@@ -46,10 +46,11 @@ int* loadTiles(int[], int);
 int* loadTilesConst(int, int);
 string getLine() ;
 int getInteger() ;
-char chooseColor();
+char chooseColour();
 void helpValues(int n);
 void chooseTiles(Game*, Player*);
 char chooseSzin();
+int convertColourToInt(char );
 
 void displayKorongHeader(int);
 void displayKorong(Game*);
@@ -196,6 +197,13 @@ void dropAll(Game* g){
     }
 }
 
+void dropTiles(Game* g, int tilesToDrop, char sz_c){
+    int sz=convertColourToInt(sz_c);
+    for(int i=0;i<5;i++){
+        if(i==sz) {g->p_tiles_dropped[i]+=tilesToDrop ;} ;
+    }
+}
+
 /// feladat#5
 char drawCH(Game* g){
     int tile_sum=0;
@@ -304,6 +312,8 @@ void displayTiles(int n,int* p_tiles){
 void displayAll(Game* g){
     cout << "content of zsak after initialization: " ;
     displayTiles(5,g->p_tiles_in_zsak);
+    cout << "dropped tiles: ";
+    displayTiles(5,g->p_tiles_dropped);
     cout << "tiles on table: " ;
     displayTiles(6,g->p_tiles_on_table);
     cout << "tiles on korongs:" << endl ;
@@ -388,7 +398,7 @@ int chooseKorong2(int n){
     }
 }
 
-char chooseColor(){
+char chooseColour(){
     cout << "Melyik szint valasztod? (a,b,c,d,e): " ;
     while(true){
         //cout << "Melyik szint valasztod? (a,b,c,d,e): " ;
@@ -411,25 +421,77 @@ char chooseColor(){
     }
 }
 
+int convertColourToInt(char sz_c){
+    int sz ;
+        switch(sz_c){
+        case 'a':sz=0 ;break ;
+        case 'b':sz=1 ;break ;
+        case 'c':sz=2 ;break ;
+        case 'd':sz=3 ;break ;
+        default: sz=4 ;break ;
+        }
+    return sz ;
+}
+
 void getChoice(int& k, char& sz_c, int& m, int nrKorongs){
     /// valasztas rogzitese
     k = chooseKorong2(nrKorongs);
-    sz_c=chooseColor();
+    sz_c=chooseColour();
     cout << "Melyik sorra szeretned tenni a csempeket? " ;
     m=getInteger() ;
 }
 
-bool validateChoice(Table* t, char sz, int m){
+bool validateChoice(Korong* k,Table* t, char sz_c, int m){
     bool validinput=false ;
+    int sz_i=convertColourToInt(sz_c) ;
+
+    /// check szin and korong
+    int sumtiles=0;
+    for(int i=0;i<5;i++){
+        sumtiles+=k->tiles_on_korong[i] ;
+    }
+    if(sumtiles==0){
+        cout << "A megadott korong ures! Probald ujra!\n";
+        return false ;
+    }
+    if(k->tiles_on_korong[sz_i]==0){
+        cout << "A megadott szin nincs a korongon! Probald ujra!\n";
+        return false ;
+    }
+
+    /// check mintasor
     if( t->mintasor[m-1][0]== '-' ||
-        t->mintasor[m-1][0]==sz ){
-            validinput=true ;
+        t->mintasor[m-1][0]==sz_c ){
+            //validinput=true ;
+            return true ;
     };
-    if(!validinput){ cout << "A megadott mindasorban mas szinu elemek vannak! Probald ujra!\n" ; }
-    return validinput ;
+    if(!validinput){
+        cout << "A megadott mintasorban mas szinu elemek vannak! Probald ujra!\n" ;
+        return false ;
+    }
 }
 
-void putTilesToTable(Table* t, char sz, int m, int tilesToBeAllocated, bool kezdoko){
+bool checkEndOfRound(Game* g){
+    int sumTilesOnKorongs=0;
+    for(int i=0;i<g->nrKorongs;i++){
+        for (int j=0;j<5;j++){
+            sumTilesOnKorongs+=(g->p_Korongs+i)->tiles_on_korong[j];
+        }
+    }
+    if(sumTilesOnKorongs==0){return true;}
+    else{return false;} ;
+}
+
+void setKorongs(Game* g){
+    for(int i=0;i<g->nrKorongs;i++){
+        for (int j=0;j<5;j++){
+            (g->p_Korongs+i)->tiles_on_korong[j]=0;
+        }
+    }
+    (g->p_Korongs+6)->tiles_on_korong[4]=5;
+}
+
+void putTilesToTable(Table* t, char sz, int m, int tilesToBeAllocated, bool kezdoko, int& unallocated){
     int allocated=0;
     int j=0 ;
     /// sort out kezdoko
@@ -446,13 +508,14 @@ void putTilesToTable(Table* t, char sz, int m, int tilesToBeAllocated, bool kezd
     }
     j=0;
     /// put tiles to padlo
-    while(allocated<tilesToBeAllocated){
+    while(allocated<tilesToBeAllocated&&j<7){
         if(t->tiles_on_padlo[0][j]=='-'){ /// start filling padlo where '-' occurs
             t->tiles_on_padlo[0][j]=sz;
             allocated++;
         }
         j++;
     }
+    unallocated=tilesToBeAllocated-allocated ;
 }
 
 void chooseTiles(Game* g, Player* p){
@@ -464,23 +527,19 @@ void chooseTiles(Game* g, Player* p){
     /// record and validate user choice
     do{
         getChoice(k,sz_c,m,g->nrKorongs) ;
-    }while(!validateChoice(p->p_table,sz_c,m)) ;
+    }while(!validateChoice(g->p_Korongs+k-1,p->p_table,sz_c,m)) ;
+
+    int sz = convertColourToInt(sz_c);
 
     /// akcio vegrehajtasa
-    int sz ;
-    switch(sz_c){
-    case 'a':sz=0 ;break ;
-    case 'b':sz=1 ;break ;
-    case 'c':sz=2 ;break ;
-    case 'd':sz=3 ;break ;
-    default: sz=4 ;break ;
-    }
-
     if(k!=0){ /// korong is chosen, not table
         //displayTiles(5,(g->p_Korongs+k-1)->tiles_on_korong) ;
         int choosentiles_cnt = (g->p_Korongs+k-1)->tiles_on_korong[sz];
         (g->p_Korongs+k-1)->tiles_on_korong[sz]=0; /// set colours to 0
-        putTilesToTable(p->p_table,sz_c,m,choosentiles_cnt,0);
+        int tilesToDrop=0 ;
+        putTilesToTable(p->p_table,sz_c,m,choosentiles_cnt,0,tilesToDrop);
+        cout << "tiles to drop: " << tilesToDrop << endl ;
+        dropTiles(g,tilesToDrop,sz_c) ;
 
         //displayTiles(5,(g->p_Korongs+k-1)->tiles_on_korong);
     }
@@ -490,7 +549,9 @@ void chooseTiles(Game* g, Player* p){
         bool kezdoko = (g->p_tiles_on_table[5]>0) ;
         g->p_tiles_on_table[5]=0 ; /// set kezdoko to 0
         g->p_tiles_on_table[sz]=0; /// set colours to 0
-        putTilesToTable(p->p_table,sz_c,m,choosentiles_cnt,kezdoko);
+        int tilesToDrop=0 ;
+        putTilesToTable(p->p_table,sz_c,m,choosentiles_cnt,kezdoko,tilesToDrop);
+        dropTiles(g,tilesToDrop,sz_c) ;
     }
 
     cout << endl ;
