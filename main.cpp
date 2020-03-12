@@ -31,10 +31,19 @@ int main()
     Player* p0 = createPlayerList(nrPlayer) ;
     cout << endl ;
 
-    while(true){
-    for(int i=0;i<nrPlayer;i++){
+    //setKorongs(p_newgame) ;
+    bool endOfRound=checkEndOfRound(p_newgame);
+    while(!endOfRound){
+    for(int i=0;i<nrPlayer,!endOfRound;i++){
         system("cls");
 
+        /*
+        for(int i=0;i<7;i++){
+            p0->p_table->tiles_on_padlo[0][i]='e';
+            (p0+1)->p_table->tiles_on_padlo[0][i]='e';
+            (p0+2)->p_table->tiles_on_padlo[0][i]='e';
+        }
+        */
         /// display game repo and player's table
         displayAll(p_newgame) ;
         displayPlayer(p0+i);
@@ -48,9 +57,11 @@ int main()
         displayPlayer(p0+i);
 
         ///https://www.dreamincode.net/forums/topic/185297-press-any-key-to-continue/
-        cout << "Press any key to continue...\n";
-        cin.clear();cin.sync();cin.get();
-
+        cout << "Press ESC to exit. Press any other key to continue...\n";
+        cin.clear();cin.sync();cin.get();cin.clear() ;
+        //if(cin.get()==27) {return 0 ;}
+        endOfRound=checkEndOfRound(p_newgame);
+        if(endOfRound) { cout << "Nincs tobb csempe a korongokon. Fordulo vege!" << endl ;}
     }
     }
     /// cleanup
