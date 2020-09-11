@@ -1,5 +1,4 @@
-#ifndef HEAD_01STRUCT_H_INCLUDED
-#define HEAD_01STRUCT_H_INCLUDED
+#pragma once
 
 /// structs
 struct Korong{
@@ -24,7 +23,7 @@ struct Table{
 
 struct Player{
     int points ;
-    string name ;
+    std::string name ;
     bool mintasorfull=false;
     Table table ;
     Table* p_table=&table ;
@@ -37,4 +36,19 @@ struct Results{
     int* rankp ;
 };
 
-#endif // HEAD_01STRUCT_H_INCLUDED
+Player* createPlayerList(int);
+Korong* createKorongs(int,int&);
+char** init2Dmintasor(int);
+char** initXDfal(int,int,char);
+void initTable(Table*);
+void deleteTable(Table*);
+void initPlayer(Player*);
+void initKorong(Korong*, Game*,int);
+void initGame(int&, Game*);
+void deleteGame(Game*);
+//int* loadTiles(int[], int);
+int* loadTilesConst(int, int);
+Results initResults(int,Player*);
+void deleteResults(Results*);
+void deleteAll(int,Game*,Player*);
+

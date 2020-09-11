@@ -1,28 +1,7 @@
-#ifndef HEAD_00PROG_H_INCLUDED
-#define HEAD_00PROG_H_INCLUDED
-/*
-void fillZsak(Game*);
-void dropAll(Game*);
-void dropTilesFromArray(int*,char,int);
-void dropTiles(Game*, int, char);
-int  convertColourToInt(char) ;
-int* drawX(int, int);
-char drawCH(Game*);
-bool checkEndOfRound(Game*);
-bool checkEndOfGame(Player*,int);
-void allocateTiles(Game*);
-void chooseTiles(Game*,Player*);
-void setValuesForAllocation(int&,bool&,int,int,Game*,Player*) ;
-void putTilesToTable(Table*, char, int, int, bool, int& );
-void putTilesToWall(Game*, Player*);
-void calcPoints(Player*,int,int);
-int  countfullsor(Player*);
-int  countfulloszlop(Player*);
-int  countcolours5timesonwall(Player*);
-void calcPointsBonus(Player*);
-int  getMaxPoint(int, Player*);
-int  getNrPlayerWithHighScore(int, Player*, int);
-*/
+#include<iostream>
+#include<string>
+#include "prog.h"
+#include "userinp.h"
 
 void fillZsak(Game* g){
     for(int i=0;i<5;i++){
@@ -159,7 +138,7 @@ void allocateTiles(Game* g,bool& error){
 
     /// no tiles anywhere - csempek eltuntek - should not ever happen - testing purposes
     if(cumsum_zsak==0 && cumsum_dropped==0 && cumsum_desk==0){
-        cout << "Tiles are gone, play Cluedo instead and find the thief! "
+        std::cout << "Tiles are gone, play Cluedo instead and find the thief! "
              << "Press enter to exit...\n" ;
         getLine() ;
         error=true;
@@ -211,13 +190,13 @@ void chooseTiles(Game* g, Player* p){
         do{
             getChoice(k,sz_c,g->nrKorongs) ;
         }while(!validateChoice2(g,sz_c,k));
-        cout << "Nincs szabad mintasor, csak padlora mehet!" << endl ;
+        std::cout << "Nincs szabad mintasor, csak padlora mehet!" << std::endl ;
     }
     else {
         do{
             getChoice(k,sz_c,g->nrKorongs) ;
         }while(!validateChoice2(g,sz_c,k)) ;
-        cout << "Nincs szabad mintasor, tele a padlo, csak eldobni lehet!" << endl ;
+        std::cout << "Nincs szabad mintasor, tele a padlo, csak eldobni lehet!" << std::endl ;
     }
 
     int sz = convertColourToInt(sz_c);
@@ -263,7 +242,7 @@ void putTilesToTable(Table* t, char sz_c, int m, int& tilesToBeAllocated, bool k
         int kezdokohelye=0;
         while(kezdokohelye<7 && t->tiles_on_padlo[0][kezdokohelye]!='-'){kezdokohelye++;}; /// loop to slot where padlo has first '-'
         if(kezdokohelye<7){t->tiles_on_padlo[0][kezdokohelye]='k';}
-        else { cout << "Padlo tele, kezdoko nem leteheto!\n" ; }
+        else { std::cout << "Padlo tele, kezdoko nem leteheto!\n" ; }
     }
     /// put tiles to mintasor
     int j=0 ;
@@ -334,7 +313,7 @@ void putTilesToWall(Game* g, Player* p){
             }
 
             if(falsorafull && !padlofull){
-                cout << i+1 << ". sor mar tele van, csak padlosorra mehet.\n" ;
+                std::cout << i+1 << ". sor mar tele van, csak padlosorra mehet.\n" ;
                 int allocated=0 ;
                 /// put tiles to padlo
                 int j=0 ;
@@ -350,7 +329,7 @@ void putTilesToWall(Game* g, Player* p){
                 dropTilesFromArray(g->p_tiles_dropped,sz_c,unallocated);
             }
             else if(falsorafull && padlofull){
-                cout << i+1 << ". sor mar tele van, padlo is megtelt, elemek eldobasra kerulnek.\n" ;
+                std::cout << i+1 << ". sor mar tele van, padlo is megtelt, elemek eldobasra kerulnek.\n" ;
                 int allocated=0 ;
                 /// put tiles to padlo
                 int j=0 ;
@@ -366,7 +345,7 @@ void putTilesToWall(Game* g, Player* p){
                 dropTilesFromArray(g->p_tiles_dropped,sz_c,unallocated);
             }
             else if(elemvanmarsor && !padlofull){
-                cout << i+1 << ". sorban mar szerepel ez a szin, csak padlosorra mehet.\n" ;
+                std::cout << i+1 << ". sorban mar szerepel ez a szin, csak padlosorra mehet.\n" ;
                 int allocated=0 ;
                 /// put tiles to padlo
                 int j=0 ;
@@ -382,7 +361,7 @@ void putTilesToWall(Game* g, Player* p){
                 dropTilesFromArray(g->p_tiles_dropped,sz_c,unallocated);
             }
             else if(elemvanmarsor && padlofull){
-                cout << i+1 << ". sorban mar szerepel ez a szin, a padlo megtelt, elemek eldobasra kerulnek.\n" ;
+                std::cout << i+1 << ". sorban mar szerepel ez a szin, a padlo megtelt, elemek eldobasra kerulnek.\n" ;
                 int allocated=0 ;
                 /// put tiles to padlo
                 int j=0 ;
@@ -411,7 +390,7 @@ void putTilesToWall(Game* g, Player* p){
                 /// save number of tiles to be dropped
                 int unallocated=(i+1)-allocated ;
                 dropTilesFromArray(g->p_tiles_dropped,sz_c,unallocated);
-                cout << i+1 << ". sorbol nem lehet tablara helyezni elemeket, osszes elem padlora kerul.\n" ;
+                std::cout << i+1 << ". sorbol nem lehet tablara helyezni elemeket, osszes elem padlora kerul.\n" ;
             }
             else {
                 /// record and validate user choice
@@ -458,8 +437,8 @@ void putTilesToWall(Game* g, Player* p){
     }
     /// set back points to 0 if below
     if(p->points<0){p->points=0;}
-    cout << "end of Fal tiling\n" ;
-    cout << "Press Enter to continue...\n";
+    std::cout << "end of Fal tiling\n" ;
+    std::cout << "Press Enter to continue...\n";
     getLine() ;
 }
 
@@ -531,9 +510,9 @@ void calcPointsBonus(Player* p){
     int cntfullsor=countfullsor(p);
     int cntfulloszlop=countfulloszlop(p);
     int cntcolour5times=countcolours5timesonwall(p);
-    p->points+=cntfullsor*2; cout << "Bonus for full rows:" << cntfullsor*2 << endl ;
-    p->points+=cntfulloszlop*7; cout << "Bonus for full columns:" << cntfulloszlop*7 << endl ;
-    p->points+=cntcolour5times*10; cout << "Bonus for colours 5 times on wall:" << cntcolour5times*10 << endl ;
+    p->points+=cntfullsor*2; std::cout << "Bonus for full rows:" << cntfullsor*2 << std::endl ;
+    p->points+=cntfulloszlop*7; std::cout << "Bonus for full columns:" << cntfulloszlop*7 << std::endl ;
+    p->points+=cntcolour5times*10; std::cout << "Bonus for colours 5 times on wall:" << cntcolour5times*10 << std::endl ;
 }
 
 int getMaxPoint(int n, Player* p){
@@ -557,5 +536,3 @@ int getNrPlayerWithHighScore(int n, Player* p, int highscore){
     return highscoreplayer ;
 }
 
-
-#endif // HEAD_00PROG_H_INCLUDED

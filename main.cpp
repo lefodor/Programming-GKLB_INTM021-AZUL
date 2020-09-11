@@ -5,17 +5,12 @@
 #include<sstream>
 using namespace std;
 
-#include "head_00struct.h"
-#include "head_00allproto.h"
-#include "head_0xother.h"
-#include "head_01prog.h"
-#include "head_02init.h"
-#include "head_03display.h"
-#include "head_04userinput.h"
-///#include "head_0xother.h" only test cases
+#include "init.h"
+#include "prog.h"
+#include "display.h"
+#include "userinp.h"
 
-int main()
-{
+int main(){
     /// set random number generator
     srand(time(NULL)); /// initialize only once in application!!!
 

@@ -1,87 +1,77 @@
-#ifndef HEAD_04USERINPUT_H_INCLUDED
-#define HEAD_04USERINPUT_H_INCLUDED
-/*
-int chooseKorong(int);
-char chooseColour();
-string getLine() ;
-int getInteger() ;
-int getInteger2() ;
-void getChoice(int&, char&, int&, int);
-void getChoice(int&, char&, int);
-void getChoiceFal(int,int&);
-bool validatePlayerName(string);
-bool validateChoice2(Game*,char, int );
-bool validateChoice(Game*,Korong*,Table*, char,int, int);
-bool validateChoiceFal(Table*, int, int,bool&,bool&);
-*/
+#include<iostream>
+#include<string>
+#include<sstream>
+#include "prog.h"
+#include "userinp.h"
+
 int chooseKorong(int n){
-    cout << "Melyik korongrol valasztasz? (0-" ;
-    cout << n <<" 0:asztal): " ;
+    std::cout << "Melyik korongrol valasztasz? (0-" ;
+    std::cout << n <<" 0:asztal): " ;
     while(true) { // Read input until user enters valid data
         int korong=-99 ;
         korong=getInteger() ;
-        if(korong==-99) {cout << "Legalabb 1 korongot meg kell adni! Probald ujra!" ;}
-        else if( korong<0 || korong>n ) {cout << "Csak a kovetkezo szamok valaszthatok: 0-"<<n<<", 0:asztal) ! Probald ujra!" ;}
+        if(korong==-99) {std::cout << "Legalabb 1 korongot meg kell adni! Probald ujra!" ;}
+        else if( korong<0 || korong>n ) {std::cout << "Csak a kovetkezo szamok valaszthatok: 0-"<<n<<", 0:asztal) ! Probald ujra!" ;}
         else {return korong ;}
     }
 }
 
 char chooseColour(){
-    cout << "Melyik szint valasztod? (a,b,c,d,e): " ;
+    std::cout << "Melyik szint valasztod? (a,b,c,d,e): " ;
     while(true){
-        string str=getLine() ;
+        std::string str=getLine() ;
         int cnt=0 ;
         while(str[cnt]!='\0') { cnt++ ;}
-        if(str[0]=='\0'){cout << "Legalabb 1 szint meg kell adni! Probald ujra!" ;}
-        else if(cnt>1)  {cout << "Csak 1 szin adhato meg! Probald ujra!" ;}
+        if(str[0]=='\0'){std::cout << "Legalabb 1 szint meg kell adni! Probald ujra!" ;}
+        else if(cnt>1)  {std::cout << "Csak 1 szin adhato meg! Probald ujra!" ;}
         else{
             for(char i=97;i<102;i++){
                 if(str[0]==i) { return str[0] ;}
             }
-            cout << "Csak a kovetkezo szinek valaszthatok: a,b,c,d,e ! Probald ujra!" ;
+            std::cout << "Csak a kovetkezo szinek valaszthatok: a,b,c,d,e ! Probald ujra!" ;
         }
     }
 }
 
 ///https://www.keithschwarz.com/cs106l/fall2010/course-reader/Ch3_Streams.pdf
-string getLine() {
-    string result;
-    getline(cin, result);
+std::string getLine() {
+    std::string result;
+    getline(std::cin, result);
     return result;
 }
 
 int getInteger() {
     while(true) { // Read input until user enters valid data
-        stringstream converter;
+        std::stringstream converter;
         converter << getLine();
         // Try reading an int, continue if we succeeded.
         int result;
         if(converter >> result) {
             char remaining;
             if(converter >> remaining) // Something's left, input is invalid
-                cout << "Nem ismert karakter: " << remaining <<". Probald ujra!" ;
+                std::cout << "Nem ismert karakter: " << remaining <<". Probald ujra!" ;
             else
                 return result;
         } else
-        cout << "Kerlek a megadott integerekbol valassz. Ujra: " ;
+        std::cout << "Kerlek a megadott integerekbol valassz. Ujra: " ;
     }
 }
 
 /// same as above but in English - function only used to set nrPlayers
 int getInteger2() {
     while(true) { // Read input until user enters valid data
-        stringstream converter;
+        std::stringstream converter;
         converter << getLine();
         // Try reading an int, continue if we succeeded.
         int result;
         if(converter >> result) {
             char remaining;
             if(converter >> remaining) // Something's left, input is invalid
-                cout << "Unkown character: " << remaining << endl;
+                std::cout << "Unkown character: " << remaining << std::endl;
             else
                 return result;
         } else
-        cout << "Please choose 2,3 or 4. Try again:" ;
+        std::cout << "Please choose 2,3 or 4. Try again:" ;
     }
 }
 
@@ -89,7 +79,7 @@ void getChoice(int& k, char& sz_c, int& m, int nrKorongs){
     /// valasztas rogzitese
     k = chooseKorong(nrKorongs);
     sz_c=chooseColour();
-    cout << "Melyik sorra szeretned tenni a csempeket (1-5, 0 padlora teszi a csempet)? " ;
+    std::cout << "Melyik sorra szeretned tenni a csempeket (1-5, 0 padlora teszi a csempet)? " ;
     m=getInteger() ;
 }
 
@@ -101,15 +91,15 @@ void getChoice(int& k, char& sz_c, int nrKorongs){
 
 void getChoiceFal(int row, int& col){
     /// valasztas rogzitese
-    cout << "Melyik oszlopba szeretned tenni az "<<row+1<< ". mintasor csempeit (1-5)?" ;
+    std::cout << "Melyik oszlopba szeretned tenni az "<<row+1<< ". mintasor csempeit (1-5)?" ;
     col = getInteger() ;
 }
 
-bool validatePlayerName(string name){
+bool validatePlayerName(std::string name){
     int cnt=0;
     while(name[cnt]!='\0') { cnt++ ;}
-    if(name[0]=='\0'){cout << "Please enter a name for the player!" ; return false ;}
-    else if(cnt>8)  {cout << "Please enter a name less than 8 characters!" ; return false ;}
+    if(name[0]=='\0'){std::cout << "Please enter a name for the player!" ; return false ;}
+    else if(cnt>8)  {std::cout << "Please enter a name less than 8 characters!" ; return false ;}
     else { return true ; }
 }
 
@@ -134,7 +124,7 @@ bool validateChoice2(Game* g,char sz_c, int nKor){
             sumtiles+=g->p_tiles_on_table[i] ;
         }
         if(g->p_tiles_on_table[sz_i]==0){
-            cout << "A megadott szin nincs az asztalon! Probald ujra!\n";
+            std::cout << "A megadott szin nincs az asztalon! Probald ujra!\n";
             return false ;
         }
     }
@@ -145,21 +135,21 @@ bool validateChoice2(Game* g,char sz_c, int nKor){
             sumtiles+=(g->p_Korongs+nKor-1)->tiles_on_korong[i] ;
         }
         if((g->p_Korongs+nKor-1)->tiles_on_korong[sz_i]==0){
-            cout << "A megadott szin nincs a korongon! Probald ujra!\n";
+            std::cout << "A megadott szin nincs a korongon! Probald ujra!\n";
             return false ;
         }
     }
     else {
-        cout << nKor << "szamu asztal / korong nem letezik! Probald ujra!\n" ;
+        std::cout << nKor << "szamu asztal / korong nem letezik! Probald ujra!\n" ;
         return false ;
     }
 
     if(nKor==0 && sumtiles_desk==0 && sumtiles_korongs!=0){
-        cout << "Asztalon mar nincs csempe, de a korongokon meg van. Probald ujra!\n" ;
+        std::cout << "Asztalon mar nincs csempe, de a korongokon meg van. Probald ujra!\n" ;
         return false ;
     }
     else if(nKor!=0 && sumtiles_desk!=0 && sumtiles_korongs==0){
-        cout << "Korongokon nincs csempe, de az asztalon meg van. Probald ujra!\n" ;
+        std::cout << "Korongokon nincs csempe, de az asztalon meg van. Probald ujra!\n" ;
         return false ;
     }
     else { return true ;}
@@ -174,7 +164,7 @@ bool validateChoice(Game* g,Korong* k,Table* t, char sz_c,int nKor, int m){
 
 /// check mintasor integer (m)
     if(!(0 <= m && m <= 5 )) {
-        cout << "Nem ervenyes mintasor, padlo valasztas! Probald ujra!\n" ;
+        std::cout << "Nem ervenyes mintasor, padlo valasztas! Probald ujra!\n" ;
         return false ;
     }
 
@@ -195,11 +185,11 @@ bool validateChoice(Game* g,Korong* k,Table* t, char sz_c,int nKor, int m){
             sumtiles+=g->p_tiles_on_table[i] ;
         }
         if(sumtiles==0){
-            cout << "Az asztal ures! Probald ujra!\n";
+            std::cout << "Az asztal ures! Probald ujra!\n";
             return false ;
         }
         if(g->p_tiles_on_table[sz_i]==0){
-            cout << "A megadott szin nincs az asztalon! Probald ujra!\n";
+            std::cout << "A megadott szin nincs az asztalon! Probald ujra!\n";
             return false ;
         }
         /// save number of tiles chosen, add correction if kezdoko still on desk
@@ -215,11 +205,11 @@ bool validateChoice(Game* g,Korong* k,Table* t, char sz_c,int nKor, int m){
             sumtiles+=k->tiles_on_korong[i] ;
         }
         if(sumtiles==0){
-            cout << "A megadott korong ures! Probald ujra!\n";
+            std::cout << "A megadott korong ures! Probald ujra!\n";
             return false ;
         }
         if(k->tiles_on_korong[sz_i]==0){
-            cout << "A megadott szin nincs a korongon! Probald ujra!\n";
+            std::cout << "A megadott szin nincs a korongon! Probald ujra!\n";
             return false ;
         }
         /// save number of tiles chosen
@@ -263,11 +253,11 @@ bool validateChoice(Game* g,Korong* k,Table* t, char sz_c,int nKor, int m){
     /// check padlo if padlo is chosen
     if(m==0){
         if (!freepadlo) {
-            cout << "A padlo megtelt, mintasorba kell tenni az elemet! Probald ujra!\n" ;
+            std::cout << "A padlo megtelt, mintasorba kell tenni az elemet! Probald ujra!\n" ;
             return false ;
         }
         if(!fittopadlo && fittomintasor){
-            cout << "A padlora nem fer az osszes valasztott elem, mintasorba beleillenek! Probald ujra!\n" ;
+            std::cout << "A padlora nem fer az osszes valasztott elem, mintasorba beleillenek! Probald ujra!\n" ;
             return false ;
         }
     }
@@ -275,15 +265,15 @@ bool validateChoice(Game* g,Korong* k,Table* t, char sz_c,int nKor, int m){
     else {
         /// valasztott mintasor megtelt
         if(t->mintasor[m-1][0]==sz_c && t->mintasor[m-1][m-1]!='-' ){
-            cout << "A megadott mintasor mar megtelt!\n" ;
+            std::cout << "A megadott mintasor mar megtelt!\n" ;
             return false ;
         } /// valasztott mintasorban mas elemek vannak
         else if(t->mintasor[m-1][0]!= '-' && t->mintasor[m-1][0]!=sz_c){
-            cout << "A megadott mintasorban mas szinu elemek vannak! Probald ujra!\n" ;
+            std::cout << "A megadott mintasorban mas szinu elemek vannak! Probald ujra!\n" ;
             return false ;
         }
         else if(elemafalon){
-            cout << "A falon mar van ilyen szinu elem! Probald ujra!\n" ;
+            std::cout << "A falon mar van ilyen szinu elem! Probald ujra!\n" ;
             return false ;
         }
         else {return true ;}
@@ -298,7 +288,7 @@ bool validateChoiceFal(Table* t, int row, int col,bool& wallallocation,bool& pad
 
     /// check choice
     if(!(0<col && col<6) ) {
-        cout << "Nem megfelelo oszlop! Probald ujra!\n" ;
+        std::cout << "Nem megfelelo oszlop! Probald ujra!\n" ;
         return false ;
     }
 
@@ -316,16 +306,14 @@ bool validateChoiceFal(Table* t, int row, int col,bool& wallallocation,bool& pad
 
     /// message
     if(oszlopfoglalt){
-        cout << "A kivalasztott oszlop mar foglalt. Probald ujra!\n" ;
+        std::cout << "A kivalasztott oszlop mar foglalt. Probald ujra!\n" ;
         return false ;
     }
     else if(elemvanmaroszlop){
-        cout << "A kivalasztott oszlopban mar szerepel ez a szin. "
+        std::cout << "A kivalasztott oszlopban mar szerepel ez a szin. "
              << "Valassz masik oszlopot!\n";
         return false ;
     }
 
     else {wallallocation=true; return true ;} ;
 }
-
-#endif // HEAD_04USERINPUT_H_INCLUDED

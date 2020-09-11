@@ -1,27 +1,14 @@
-#ifndef HEAD_02INIT_H_INCLUDED
-#define HEAD_02INIT_H_INCLUDED
-/*
-Player* createPlayerList(int);
-Korong* createKorongs(int,int&);
-char** init2Dmintasor(int);
-char** initXDfal(int,int,char);
-void initTable(Table*);
-void deleteTable(Table*);
-void initPlayer(Player*);
-void initKorong(Korong*, Game*,int);
-void initGame(int&, Game*);
-void deleteGame(Game*);
-//int* loadTiles(int[], int);
-int* loadTilesConst(int, int);
-Results initResults(int,Player*);
-void deleteAll(int,Game*,Player*);
-*/
+#include<iostream>
+#include<string>
+#include "init.h"
+#include "userinp.h"
+#include "prog.h"
 
 /// creates an array with pointers to objects of Player
 Player* createPlayerList(int nrPlayers){
     Player* p=new Player[nrPlayers] ;
     for(int i=0;i<nrPlayers;i++){
-        cout << "Enter name of player#"<<i+1 <<endl ;
+        std::cout << "Enter name of player#"<<i+1 <<std::endl ;
         initPlayer(p+i) ;
     }
     return p ;
@@ -258,5 +245,3 @@ void deleteAll(int nrPlayer,Game* g,Player* p){
     /// delete game
     deleteGame(g) ; /// delete game
 }
-
-#endif // HEAD_02INIT_H_INCLUDED
